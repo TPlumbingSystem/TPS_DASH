@@ -1019,7 +1019,7 @@ def main():
   .leaflet-bar a:hover {{ background: {MARCA_ROXO}; }}
   #popup-info {{
     position: fixed; z-index: 2000; display: none; max-width: 320px;
-    background: {MARCA_ROXO_ESCURO}; border: 1px solid {MARCA_ROXO}; border-radius: 8px;
+    background: {MARCA_ROXO_ESCURO}; color: {MARCA_CINZA_CLARO}; border: 1px solid {MARCA_ROXO}; border-radius: 8px;
     padding: 10px 12px; font-size: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.5); pointer-events: none;
   }}
   #popup-info b {{ color: {MARCA_CINZA_CLARO}; }}

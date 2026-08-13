@@ -306,6 +306,8 @@ def calcular_estatisticas_elementos():
         return [], []
     df = pd.read_csv(GEOQUIMICA_CSV)
 
+    tem_classificacao = "classificacao_ti" in df.columns
+
     def montar(lista_elementos):
         stats = []
         for coluna, label, unidade in lista_elementos:
@@ -314,10 +316,19 @@ def calcular_estatisticas_elementos():
             serie = df[coluna].dropna()
             if serie.empty:
                 continue
+            media_alto = media_baixo = None
+            if tem_classificacao:
+                serie_alto = df.loc[df["classificacao_ti"] == "Alto-Ti", coluna].dropna()
+                serie_baixo = df.loc[df["classificacao_ti"] == "Baixo-Ti", coluna].dropna()
+                if not serie_alto.empty:
+                    media_alto = float(serie_alto.mean())
+                if not serie_baixo.empty:
+                    media_baixo = float(serie_baixo.mean())
             stats.append({
                 "label": label, "unidade": unidade, "n": int(serie.count()),
                 "min": float(serie.min()), "media": float(serie.mean()),
                 "mediana": float(serie.median()), "max": float(serie.max()),
+                "media_alto": media_alto, "media_baixo": media_baixo,
             })
         return stats
 
@@ -913,6 +924,8 @@ def main():
             pct_media = ((e["media"] - e["min"]) / faixa * 100) if faixa else 50
             pct_mediana = ((e["mediana"] - e["min"]) / faixa * 100) if faixa else 50
             casas = 2 if e["unidade"] == "%" else 1
+            txt_alto = f"{e['media_alto']:.{casas}f}" if e["media_alto"] is not None else "—"
+            txt_baixo = f"{e['media_baixo']:.{casas}f}" if e["media_baixo"] is not None else "—"
             linhas.append(f"""
             <tr>
                 <td>{e['label']}</td>
@@ -924,6 +937,8 @@ def main():
                     </div>
                 </td>
                 <td>{e['media']:.{casas}f} {e['unidade']}</td>
+                <td style="color:{COR_TI_ALTO}">{txt_alto}</td>
+                <td style="color:{COR_TI_BAIXO}">{txt_baixo}</td>
                 <td>{e['max']:.{casas}f}</td>
             </tr>""")
         return "".join(linhas)
@@ -1074,15 +1089,15 @@ def main():
       <h2>Apanhado estatístico — elementos químicos (41 amostras)</h2>
       <p class="subtitulo-estatistica">Óxidos maiores (% em peso)</p>
       <table class="tabela-resumo tabela-estatistica">
-        <thead><tr><th>Elemento</th><th>Mín</th><th>Distribuição</th><th>Média</th><th>Máx</th></tr></thead>
+        <thead><tr><th>Elemento</th><th>Mín</th><th>Distribuição</th><th>Média</th><th style="color:{COR_TI_ALTO}">Média Alto-Ti</th><th style="color:{COR_TI_BAIXO}">Média Baixo-Ti</th><th>Máx</th></tr></thead>
         <tbody>{estatisticas_oxidos_html}</tbody>
       </table>
       <p class="subtitulo-estatistica">Elementos traço (ppm)</p>
       <table class="tabela-resumo tabela-estatistica">
-        <thead><tr><th>Elemento</th><th>Mín</th><th>Distribuição</th><th>Média</th><th>Máx</th></tr></thead>
+        <thead><tr><th>Elemento</th><th>Mín</th><th>Distribuição</th><th>Média</th><th style="color:{COR_TI_ALTO}">Média Alto-Ti</th><th style="color:{COR_TI_BAIXO}">Média Baixo-Ti</th><th>Máx</th></tr></thead>
         <tbody>{estatisticas_tracos_html}</tbody>
       </table>
-      <p class="nota-resumo">Faixa vai do mínimo ao máximo observado · <span style="color:{MARCA_ROXO}">●</span> média · <span style="opacity:0.6">▏</span> mediana</p>
+      <p class="nota-resumo">Faixa vai do mínimo ao máximo observado · <span style="color:{MARCA_ROXO}">●</span> média · <span style="opacity:0.6">▏</span> mediana · médias por classificação Ti calculadas só sobre as amostras de cada grupo</p>
     </div>
   </div>
   <div class="painel">

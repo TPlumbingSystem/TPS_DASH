@@ -57,7 +57,12 @@ PONTOS_CAMPO_GPKG = (
     MESTRADO / "2_Banco_de_Dados" / "Unificação" / "GPKG_Novos" / "pontos_unificados_completo.gpkg"
 )
 GEOQUIMICA_CSV = MESTRADO / "2_Banco_de_Dados" / "QMC_TAIO_TODOS" / "geoquimica_dashboard.csv"
-POLIGON_INTRUSIVA_SHP = MESTRADO / "2_Banco_de_Dados" / "dados_base" / "poligon_intrusiva.shp"
+# litologia_processada.shp (ETL: 2_Banco_de_Dados/scripts_etl/processar_litologia_atualizada.py)
+# substitui o mapa geologico real (CPRM) + o poligon_intrusiva.shp antigo --
+# um shp so, com sill/dique redigitalizados (coluna "formacao") e as 6
+# formacoes sedimentares, incl. deposito quaternario (coluna "tipo" ==
+# "sedimentar"/"intrusiva").
+LITOLOGIA_ATUALIZADA = MESTRADO / "2_Banco_de_Dados" / "dados_base" / "litologia_processada.shp"
 TOPO_NPY = MODELO_3D_DIR / "dados_entrada" / "topografia_drone" / "topografia_xyz.npy"
 
 # mesmo plano de mergulho regional + erosao contra o relevo real ja usado pra
@@ -89,6 +94,9 @@ COR_PAINEL = "#262B3D"
 
 COR_SILL = "#A63D2F"
 COR_DIQUE = "#1B4332"
+NOMES_CAMADAS = ["Teresina", "Serra Alta", "Irati", "Palermo", "Rio Bonito"]
+CORES_CAMADAS = ["#D6C79A", "#8C8C86", "#3E362C", "#B5AE93", "#C9A66B"]
+COR_QUATERNARIO = "#D9CB82"
 CORES_LITOLOGIA_CAMPO = {
     "sill_diabasio": COR_SILL, "sill_diabasio_cprm": COR_SILL,
     "dique": COR_DIQUE, "dique_cprm": COR_DIQUE,
@@ -247,10 +255,10 @@ def calcular_volume_sill_m3(grupo_sill, elevacao_fn, passo=80.0):
 def carregar_resumo_corpos(registros_geoq):
     resumo = {"sill_diabasio": {"nome": "Soleira (sill)", "area_km2": 0.0, "n_poligonos": 0, "alto": 0, "baixo": 0, "volume_km3": None},
               "dique": {"nome": "Dique", "area_km2": 0.0, "n_poligonos": 0, "alto": 0, "baixo": 0, "volume_km3": None}}
-    if POLIGON_INTRUSIVA_SHP.exists():
-        gdf = gpd.read_file(POLIGON_INTRUSIVA_SHP)
+    if LITOLOGIA_ATUALIZADA.exists():
+        gdf = gpd.read_file(LITOLOGIA_ATUALIZADA)
         mapa_tipo = {"Soleira": "sill_diabasio", "Dique": "dique"}
-        for tipo, grupo in gdf.groupby("tipo"):
+        for tipo, grupo in gdf.groupby("formacao"):
             chave = mapa_tipo.get(tipo)
             if not chave:
                 continue
@@ -796,13 +804,16 @@ def main():
         } for r in geoq_coord],
     }
 
-    # mapa geologico real (CPRM, 9 formacoes) -- mesma camada usada no
+    # mapa geologico atualizado (6 formacoes) -- mesma camada usada no
     # webmap dedicado (gerar_webmap_taio.py), pedido explicito do usuario
     # ("faltou o mapa geológico junto").
-    formacoes_path = BASE.parent.parent / "2_Banco_de_Dados" / "saida_processada" / "formacoes_cprm_poligonos.geojson"
+    CORES_LITOLOGIA_MAPA = dict(zip(NOMES_CAMADAS, CORES_CAMADAS))
+    CORES_LITOLOGIA_MAPA["Depósito quaternário"] = COR_QUATERNARIO
     geojson_formacoes = None
-    if formacoes_path.exists():
-        gdf_formacoes = gpd.read_file(formacoes_path).to_crs(4326)
+    if LITOLOGIA_ATUALIZADA.exists():
+        gdf_formacoes = gpd.read_file(LITOLOGIA_ATUALIZADA)
+        gdf_formacoes = gdf_formacoes[gdf_formacoes["tipo"] == "sedimentar"].to_crs(4326)
+        gdf_formacoes["cor"] = gdf_formacoes["formacao"].map(CORES_LITOLOGIA_MAPA).fillna("#CCCCCC")
         gdf_formacoes["popup"] = gdf_formacoes["formacao"]
         geojson_formacoes = json.loads(gdf_formacoes[["formacao", "cor", "popup", "geometry"]].to_json())
         print(f"  mapa geológico: {len(gdf_formacoes)} formações")
@@ -1251,7 +1262,7 @@ def main():
         style: function(f) {{ return {{ color: '#000', weight: 0.5, fillColor: f.properties.cor, fillOpacity: 0.5 }}; }},
         onEachFeature: function(f, layer) {{ layer.bindPopup(f.properties.popup); }},
     }});
-    overlaysMapa["Mapa geológico real (CPRM)"] = formacoesLayer;"""
+    overlaysMapa["Mapa geológico atualizado"] = formacoesLayer;"""
     html_final += f"""
     L.control.layers(
         {{ "Escuro (CartoDB Dark)": escuro, "Rico (CartoDB Voyager)": rico, "Satélite (Esri)": satelite, "Relevo/Topográfico": relevo, "OSM Padrão": osmPadrao }},

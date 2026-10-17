@@ -86,7 +86,6 @@ COR_TI_BAIXO = "#2E86C1"
 # identidade visual GS Tech -- mesma paleta dos outros produtos, manter em sincronia.
 MARCA_ROXO_ESCURO = "#1B263B"  # nova identidade TAIO -- fundo secundario (era roxo escuro)
 MARCA_ROXO = "#E23D2B"  # nova identidade TAIO -- cor de destaque (era roxo)
-MARCA_AZUL = "#547B8C"  # nova identidade TAIO
 MARCA_NAVY = "#0D1B2A"  # nova identidade TAIO -- fundo principal
 MARCA_CINZA_CLARO = "#F2F4F5"  # nova identidade TAIO
 MARCA_FONTE = "Montserrat, Arial, sans-serif"
@@ -109,19 +108,6 @@ COR_TI_INDEFINIDO = "#9A9A9A"
 
 
 NOME_PONTO = {}  # ponto_id -> nome padrao ITC (preenchido em main)
-
-
-def txt(valor, padrao=""):
-    """Converte valor de celula (pode ser pd.NA/None/nan) pra string segura --
-    `pd.NA or ""` explode com TypeError, entao nao da pra usar `or` direto."""
-    if valor is None or (isinstance(valor, float) and np.isnan(valor)) or valor is pd.NA:
-        return padrao
-    try:
-        if pd.isna(valor):
-            return padrao
-    except (TypeError, ValueError):
-        pass
-    return str(valor)
 
 
 def logo_base64():

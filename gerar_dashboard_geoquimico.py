@@ -84,12 +84,12 @@ COR_TI_ALTO = "#E67E22"
 COR_TI_BAIXO = "#2E86C1"
 
 # identidade visual GS Tech -- mesma paleta dos outros produtos, manter em sincronia.
-MARCA_ROXO_ESCURO = "#1B263B"  # nova identidade TAIO -- fundo secundario (era roxo escuro)
-MARCA_ROXO = "#E23D2B"  # nova identidade TAIO -- cor de destaque (era roxo)
-MARCA_NAVY = "#0D1B2A"  # nova identidade TAIO -- fundo principal
-MARCA_CINZA_CLARO = "#F2F4F5"  # nova identidade TAIO
+MARCA_ROXO_ESCURO = "#0C2945"  # nova identidade TAIO -- fundo secundario (era roxo escuro)
+MARCA_ROXO = "#13BBE6"  # Signal Cyan -- destaque da interface (vermelho Magma Red so p/ intrusoes)
+MARCA_NAVY = "#071729"  # nova identidade TAIO -- fundo principal
+MARCA_CINZA_CLARO = "#F1F5F9"  # nova identidade TAIO
 MARCA_FONTE = "Montserrat, Arial, sans-serif"
-COR_PAINEL = "#262B3D"
+COR_PAINEL = "#0A2540"
 
 COR_SILL = "#49B18C"
 COR_DIQUE = "#AFEC7C"
@@ -494,7 +494,7 @@ def trace_pontos_geoq(pontos, x_key, y_key, nome="Amostras Taió"):
         ids.append(p["id_display"])
     return go.Scatter(
         x=xs, y=ys, mode="markers", name=nome, text=textos, hoverinfo="text", customdata=ids,
-        marker=dict(size=8, color=cores, line=dict(width=1, color="#0D1B2A")),
+        marker=dict(size=8, color=cores, line=dict(width=1, color="#071729")),
         showlegend=False,
     )
 
@@ -567,7 +567,7 @@ def montar_afm(pontos=None):
             ids.append(p["id_display"])
         fig.add_trace(go.Scatterternary(
             a=xs_a, b=xs_b, c=xs_c, mode="markers", text=textos, hoverinfo="text", customdata=ids,
-            name="Amostras Taió", marker=dict(size=8, color=cores, line=dict(width=1, color="#0D1B2A")), showlegend=False,
+            name="Amostras Taió", marker=dict(size=8, color=cores, line=dict(width=1, color="#071729")), showlegend=False,
         ))
     fig.update_layout(
         ternary=dict(
@@ -1064,7 +1064,7 @@ def main():
   header h1 {{ font-size: 20px; margin: 0; }}
   header h1 b {{ color: {MARCA_ROXO}; }}
   header .lado-direito {{ display: flex; align-items: center; gap: 12px; }}
-  header img {{ width: 52px; height: 52px; border-radius: 50%; border: 2px solid {MARCA_ROXO}; box-shadow: 0 0 10px rgba(123,47,255,0.6); }}
+  header img {{ width: 52px; height: 52px; border-radius: 50%; border: 2px solid {MARCA_ROXO}; box-shadow: 0 0 10px rgba(19,187,230,0.6); }}
   .btn-tema {{
     background: {MARCA_ROXO_ESCURO}; color: {MARCA_CINZA_CLARO}; border: 1.5px solid {MARCA_ROXO};
     border-radius: 6px; padding: 7px 12px; font-family: {MARCA_FONTE}; font-size: 12px; cursor: pointer;
@@ -1100,14 +1100,14 @@ def main():
   th {{ position: sticky; top: 0; background: var(--painel); text-align: left; padding: 6px 6px; border-bottom: 1px solid {MARCA_ROXO}; opacity: 0.75; font-weight: 500; }}
   td {{ padding: 6px 6px; border-bottom: 1px solid var(--borda-fraca); }}
   .linha-dado {{ cursor: pointer; }}
-  .linha-dado:hover {{ background: rgba(123,47,255,0.15); }}
-  .linha-dado.selecionada {{ background: rgba(123,47,255,0.35); }}
+  .linha-dado:hover {{ background: rgba(19,187,230,0.15); }}
+  .linha-dado.selecionada {{ background: rgba(19,187,230,0.35); }}
   .nome-ponto {{
     display: inline-block; padding: 2px 7px; border-radius: 5px;
-    border: 1px solid rgba(123,47,255,0.35); background: rgba(123,47,255,0.08);
+    border: 1px solid rgba(19,187,230,0.35); background: rgba(19,187,230,0.08);
   }}
   .linha-dado.selecionada .nome-ponto {{
-    color: {MARCA_ROXO}; font-weight: 700; border-color: {MARCA_ROXO}; background: rgba(123,47,255,0.18);
+    color: {MARCA_ROXO}; font-weight: 700; border-color: {MARCA_ROXO}; background: rgba(19,187,230,0.18);
   }}
   body.tema-claro .linha-dado.selecionada .nome-ponto {{ color: #5A1FBF; border-color: #5A1FBF; }}
   .dot-cor {{ display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }}
@@ -1259,7 +1259,7 @@ def main():
             var n = g.customdata.length;
             var tamanhos = new Array(n).fill(8);
             var largurasLinha = new Array(n).fill(1);
-            var coresLinha = new Array(n).fill('#0D1B2A');
+            var coresLinha = new Array(n).fill('#071729');
             var pos = g.customdata.indexOf(idSelecionado);
             if (pos !== -1) {{
                 tamanhos[pos] = 14;
@@ -1344,7 +1344,7 @@ def main():
     var geoqLayer = L.geoJSON({json.dumps(geojson_geoq, ensure_ascii=False)}, {{
         pointToLayer: function(f, latlng) {{
             return L.circleMarker(latlng, {{
-                radius: 7, fillColor: f.properties.cor, color: '#0D1B2A', weight: 1.5,
+                radius: 7, fillColor: f.properties.cor, color: '#071729', weight: 1.5,
                 fillOpacity: 0.95, pane: 'markerPane',
             }});
         }},

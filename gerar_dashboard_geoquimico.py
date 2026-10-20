@@ -1041,9 +1041,9 @@ def main():
 <html lang="pt-br">
 <head>
 <meta charset="utf-8">
-<link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="shortcut icon" href="assets/favicon.ico">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="assets/favicon.png?v=2">
+<link rel="shortcut icon" href="assets/favicon.ico?v=2">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=2">
 <title>Dashboard Geoquímico — Taió</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
